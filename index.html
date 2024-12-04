@@ -44,8 +44,11 @@
       margin-top: 20px;
       grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     }
-    #add-word {
-      margin: 10px;
+    #controls {
+      margin: 20px 0;
+    }
+    #add-word, #clear-text, #copy-text {
+      margin: 5px;
       padding: 10px 20px;
       font-size: 16px;
       background-color: #4CAF50;
@@ -54,15 +57,25 @@
       border-radius: 5px;
       cursor: pointer;
     }
-    #add-word:hover {
-      background-color: #45a049;
+    #clear-text {
+      background-color: #f44336;
+    }
+    #copy-text {
+      background-color: #2196F3;
+    }
+    #add-word:hover, #clear-text:hover, #copy-text:hover {
+      opacity: 0.9;
     }
   </style>
 </head>
 <body>
   <h1>Onscreen Keyboard with Word Bank</h1>
   <textarea id="output" placeholder="Type here..."></textarea>
-  <button id="add-word">Add Words</button>
+  <div id="controls">
+    <button id="add-word">Add Words</button>
+    <button id="clear-text">Clear Text</button>
+    <button id="copy-text">Copy Text</button>
+  </div>
   <div class="keyboard">
     <!-- Numbers -->
     <div class="key">1</div>
@@ -117,6 +130,8 @@
     const output = document.getElementById('output');
     const keys = document.querySelectorAll('.key');
     const addWordButton = document.getElementById('add-word');
+    const clearTextButton = document.getElementById('clear-text');
+    const copyTextButton = document.getElementById('copy-text');
     const wordBank = document.getElementById('word-bank');
 
     // Add typed key to the output
@@ -146,7 +161,13 @@
 
             // Add event listener for inserting the word into the output
             wordButton.addEventListener('click', () => {
-              output.value += word + " ";
+              output.value += word + ' ';
+            });
+
+            // Add event listener for right-click to remove the word
+            wordButton.addEventListener('contextmenu', (e) => {
+              e.preventDefault(); // Prevent the default context menu
+              wordBank.removeChild(wordButton); // Remove the word button
             });
 
             // Add the word to the word bank
@@ -156,6 +177,20 @@
 
         output.value = ''; // Clear the text area after adding the words
       }
+    });
+
+    // Clear the text area
+    clearTextButton.addEventListener('click', () => {
+      output.value = '';
+    });
+
+    // Copy text area content to clipboard
+    copyTextButton.addEventListener('click', () => {
+      navigator.clipboard.writeText(output.value).then(() => {
+        alert('Text copied to clipboard!');
+      }).catch(err => {
+        console.error('Failed to copy text: ', err);
+      });
     });
 
     // Check if a word is already in the word bank
